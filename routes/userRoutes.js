@@ -8,6 +8,74 @@ import { responseMiddleware } from "../middlewares/response.middleware.js";
 
 const router = Router();
 
-// TODO: Implement route controllers for user
+router.get("/", async (req, res, next) => {
+  try {
+    const data = await userService.getAll();
+    res.data = data;
+  } catch (err) {
+    res.err = err;
+  } finally {
+    next();
+  }
+},
+  responseMiddleware
+)
+
+router.get("/:id", async (req, res, next) => {
+  try {
+    const id = req.params.id
+    const data = await userService.search({ id: id });
+    res.data = data;
+  } catch (err) {
+    res.err = err;
+  } finally {
+    next();
+  }
+},
+  responseMiddleware
+)
+
+router.post("/", async (req, res, next) => {
+  try {
+    const body = req.body
+    const data = await userService.create(body);
+    res.data = data;
+  } catch (err) {
+    res.err = err;
+  } finally {
+    next();
+  }
+},
+  responseMiddleware
+)
+
+router.patch("/:id", async (req, res, next) => {
+  try {
+    const id = req.params.id
+    const body = req.body
+    const data = await userService.update(id, body);
+    res.data = data;
+  } catch (err) {
+    res.err = err;
+  } finally {
+    next();
+  }
+},
+  responseMiddleware
+)
+
+router.delete("/:id", async (req, res, next) => {
+  try {
+    const id = req.params.id
+    const data = await userService.delete(id);
+    res.data = data;
+  } catch (err) {
+    res.err = err;
+  } finally {
+    next();
+  }
+},
+  responseMiddleware
+)
 
 export { router };
