@@ -35,7 +35,7 @@ router.get("/:id", async (req, res, next) => {
   responseMiddleware
 )
 
-router.post("/", async (req, res, next) => {
+router.post("/", createUserValid, async (req, res, next) => {
   try {
     const body = req.body
     const data = await userService.create(body);
@@ -46,10 +46,10 @@ router.post("/", async (req, res, next) => {
     next();
   }
 },
-  responseMiddleware
+  responseMiddleware,
 )
 
-router.patch("/:id", async (req, res, next) => {
+router.patch("/:id", updateUserValid, async (req, res, next) => {
   try {
     const id = req.params.id
     const body = req.body
