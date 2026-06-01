@@ -35,7 +35,7 @@ router.get("/:id", async (req, res, next) => {
   responseMiddleware
 )
 
-router.post("/", async (req, res, next) => {
+router.post("/", createFighterValid, async (req, res, next) => {
   try {
     const body = req.body
     const data = await fighterService.create(body);
@@ -49,7 +49,7 @@ router.post("/", async (req, res, next) => {
   responseMiddleware,
 )
 
-router.patch("/:id", async (req, res, next) => {
+router.patch("/:id", updateFighterValid, async (req, res, next) => {
   try {
     const id = req.params.id
     const body = req.body
