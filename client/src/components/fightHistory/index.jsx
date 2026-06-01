@@ -1,95 +1,68 @@
-import { Button, Collapse, Dialog, DialogContent, DialogTitle, Paper, Typography } from "@mui/material";
+import {
+    Button, Collapse, Dialog, DialogContent, DialogTitle,
+    Paper, Typography, Box, Divider
+} from "@mui/material";
 import { useState } from "react";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
-export default function FightHistory({ open, onClose, fights }) {
-    const [selectedFight, setSelectedFight] = useState(null);
+export default function FightHistory({ open, onClose, fights = [] }) {
+    const [selectedFightId, setSelectedFightId] = useState(null);
 
-    const toggleLog = (fightId) => {
-        setSelectedFight(
-            selectedFight === fightId ? null : fightId
+    if (!fights || fights.length === 0) {
+        return (
+            <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+                <DialogTitle>Fight History</DialogTitle>
+                <DialogContent>
+                    <Typography>No fight records found.</Typography>
+                </DialogContent>
+            </Dialog>
         );
-    };
+    }
 
     return (
-        <Dialog
-            open={open}
-            onClose={onClose}
-            maxWidth="md"
-            fullWidth
-        >
-            <DialogTitle color="black">
-                Fight History
-            </DialogTitle>
-
-            <DialogContent>
+        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+            <DialogTitle>Fight History</DialogTitle>
+            <DialogContent dividers>
                 {fights.map((fight) => (
-                    <Paper
-                        key={fight.id}
-                        sx={{ p: 2, mb: 2 }}
-                    >
-                        <Typography variant="h6">
-                            {fight.fighter1Name} vs {fight.fighter2Name}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            Date: {new Date(fight.createdAt).toLocaleDateString()}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            Time: {new Date(fight.createdAt).toLocaleTimeString()}
-                        </Typography>
-                        <Typography>
-                            Winner: {fight.winner}
-                        </Typography>
+                    <Paper key={fight.id} sx={{ p: 2, mb: 2, bgcolor: '#f9f9f9' }}>
+                        <Box display="flex" justifyContent="space-between" alignItems="center">
+                            <Typography variant="h6" fontWeight="bold">
+                                {fight.fighter1Name} vs {fight.fighter2Name}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                                {new Date(fight.createdAt).toLocaleString()}
+                            </Typography>
+                        </Box>
 
-                        <Typography>
-                            Rounds: {fight.log.length}
+                        <Typography variant="body1" sx={{ my: 1 }}>
+                            🏆 Winner: <strong>{fight.winner}</strong>
                         </Typography>
 
                         <Button
-                            sx={{ mt: 1 }}
-                            variant="outlined"
-                            onClick={() => toggleLog(fight.id)}
+                            variant="text"
+                            endIcon={selectedFightId === fight.id ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                            onClick={() => setSelectedFightId(selectedFightId === fight.id ? null : fight.id)}
                         >
-                            {selectedFight === fight.id
-                                ? "Hide Log"
-                                : "View Log"}
+                            {selectedFightId === fight.id ? "Hide Details" : "View Battle Log"}
                         </Button>
 
-                        <Collapse in={selectedFight === fight.id}>
-                            <Paper
-                                variant="outlined"
-                                sx={{ mt: 2, p: 2 }}
-                            >
+                        <Collapse in={selectedFightId === fight.id}>
+                            <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid #ddd' }}>
                                 {fight.log.map((round, index) => (
-                                    <Typography
-                                        key={index}
-                                        sx={{ mb: 1 }}
-                                    >
-                                        Round {index + 1} | Damage:
-                                        {" "}
-                                        {fight.fighter1Name}
-                                        {" "}
-                                        ({round.fighter1Shot})
-                                        {" "}
-                                        -
-                                        {" "}
-                                        {fight.fighter2Name}
-                                        {" "}
-                                        ({round.fighter2Shot})
-                                        {" "}
-                                        | Health:
-                                        {" "}
-                                        {fight.fighter1Name}
-                                        {" "}
-                                        ({round.fighter1Health})
-                                        {" "}
-                                        -
-                                        {" "}
-                                        {fight.fighter2Name}
-                                        {" "}
-                                        ({round.fighter2Health})
-                                    </Typography>
+                                    <Box key={index} sx={{ mb: 1.5, fontSize: '0.85rem' }}>
+                                        <Typography variant="subtitle2" color="primary">Round {index + 1}</Typography>
+                                        <Typography>
+                                            ⚔️ {fight.fighter1Name} ({round.fighter1Shot}) vs
+                                            {fight.fighter2Name} ({round.fighter2Shot})
+                                        </Typography>
+                                        <Typography color="text.secondary">
+                                            ❤️ Health: {round.fighter1Health} - {round.fighter2Health}
+                                        </Typography>
+                                        {index < fight.log.length - 1 && <Divider sx={{ my: 1 }} />}
+                                    </Box>
                                 ))}
-                            </Paper>
+                            </Box>
                         </Collapse>
                     </Paper>
                 ))}
